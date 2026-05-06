@@ -272,7 +272,7 @@ html, body {{
     margin: 0;
     padding: 0;
     background: #020b12;
-    font-family: 'Apple SD Gothic Neo', Arial, sans-serif;
+    font-family: 'NanumGothic', 'Nanum Gothic', 'Apple SD Gothic Neo', Arial, sans-serif;
     color: white;
     width: fit-content;
     height: fit-content;
