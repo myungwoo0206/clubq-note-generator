@@ -6,3 +6,4 @@ libgtk-3-0
 libgbm1
 libasound2
 fonts-nanum
+fonts-noto-cjk
