@@ -2,7 +2,10 @@ import streamlit as st
 import subprocess
 import sys
 import os
+import re
+from datetime import datetime
 from PIL import Image
+from openpyxl import load_workbook
 
 # -----------------------------
 # Playwright Chromium 설치
@@ -14,6 +17,38 @@ def ensure_playwright():
     )
 
 ensure_playwright()
+
+# -----------------------------
+# 파일명 생성 함수
+# -----------------------------
+def get_note_filename_from_excel(path="data.xlsx"):
+    try:
+        wb = load_workbook(path, data_only=True)
+        ws = wb.active
+
+        raw = ws["A1"].value
+
+        if not raw:
+            return "ClubQ NOTE"
+
+        first_line = str(raw).splitlines()[0].strip()
+
+        # 예: 5.6.(화), 05.06.(화)
+        match = re.search(r"(\d+)\.(\d+)", first_line)
+
+        if not match:
+            return "ClubQ NOTE"
+
+        month = int(match.group(1))
+        day = int(match.group(2))
+
+        # 현재 연도 뒤 2자리
+        year = datetime.now().strftime("%y")
+
+        return f"{year}{month:02d}{day:02d} ClubQ NOTE"
+
+    except Exception:
+        return "ClubQ NOTE"
 
 # -----------------------------
 # Streamlit 페이지 설정
@@ -75,6 +110,8 @@ if uploaded_file:
 
             if os.path.exists(image_path):
 
+                download_filename = f"{get_note_filename_from_excel('data.xlsx')}.png"
+
                 image = Image.open(image_path)
 
                 st.image(
@@ -88,9 +125,11 @@ if uploaded_file:
                     st.download_button(
                         label="📥 이미지 다운로드",
                         data=file,
-                        file_name="clubq_note_final.png",
+                        file_name=download_filename,
                         mime="image/png"
                     )
+
+                st.caption(f"다운로드 파일명: {download_filename}")
 
             else:
                 st.error("❌ 이미지 파일을 찾을 수 없습니다.")
